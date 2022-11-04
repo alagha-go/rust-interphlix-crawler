@@ -1,5 +1,3 @@
-use std::fs::File;
-use std::io::{BufWriter, Write};
 use static_init::dynamic;
 
 mod crawler;
