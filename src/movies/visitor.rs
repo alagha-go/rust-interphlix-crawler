@@ -9,7 +9,6 @@ impl<'de> Visitor<'de> for ObjectIdVisitor {
     where
         E: de::Error,
     {
-        let value = ObjectId::from_hex(&s.to_owned()).unwrap();
         Ok(ObjectId::from_hex(&s.to_owned()).unwrap())
     }
 
@@ -17,7 +16,6 @@ impl<'de> Visitor<'de> for ObjectIdVisitor {
     where
         E: de::Error,
     {
-        let value = ObjectId::from_hex(&s).unwrap();
         Ok(ObjectId::from_hex(&s).unwrap())
     }
 }
