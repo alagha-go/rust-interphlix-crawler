@@ -38,6 +38,10 @@ impl Document {
                                     _ => {}
                                 }
                             }
+                        },
+                        Document::Text(content) => {
+                            let document = Document::Text(content);
+                            stack.push(Action::Call((document, level+1)));
                         }
                     }
                 },
@@ -59,7 +63,7 @@ impl Document {
             match document {
                 Document::Element(element) => {
                     if element.id == id {
-                        documents.push(Document::Element(element.clone()));
+                        documents.push(document.clone());
                     };
 
                     return false
@@ -79,7 +83,7 @@ impl Document {
             match document {
                 Document::Element(element) => {
                     if element.id == id {
-                        res = Some(Document::Element(element.clone()));
+                        res = Some(document.clone());
                         return true
                     };
 
@@ -110,7 +114,7 @@ impl Document {
                         };
                     }
 
-                    documents.push(Document::Element(element.clone()));
+                    documents.push(document.clone());
                     return false
                 },
                 _ => {false},
@@ -138,7 +142,7 @@ impl Document {
                         };
                     }
 
-                    res = Some(Document::Element(element.clone()));
+                    res = Some(document.clone());
                     return true
                 },
                 _ => {false},
@@ -157,7 +161,7 @@ impl Document {
             match document {
                 Document::Element(element) => {
                     if element.attributes.get(&attribute.key) == Some(&attribute.value) {
-                        res = Some(Document::Element(element.clone()));
+                        res = Some(document.clone());
                         return true
                     }
 
@@ -179,7 +183,7 @@ impl Document {
             match document {
                 Document::Element(element) => {
                     if element.attributes.get(&attribute.key) == Some(&attribute.value) {
-                        documents.push(Document::Element(element.clone()));
+                        documents.push(document.clone());
                     }
 
                     return false
@@ -236,5 +240,85 @@ impl Document {
 
         Document::for_each(self, function);
         attributes
+    }
+
+    pub fn get_by_name(&self, name: &String) -> Option<Document> {
+        let mut value: Option<Document> = None;
+
+        let function = |document: &Document| {
+            match document {
+                Document::Element(element) => {
+                    if element.name == *name {
+                        value = Some(document.clone());
+                        return true
+                    }
+                    return false
+                },
+                _ => {false},
+            }
+        };
+
+        Document::for_each(self, function);
+        value
+    }
+
+    pub fn get_all_by_name(&self, name: &String) -> Vec<Document> {
+        let mut documents = Vec::new();
+
+        let function = |document: &Document| {
+            match document {
+                Document::Element(element) => {
+                    if element.name == *name {
+                        documents.push(document.clone());
+                    }
+                    return false
+                },
+                _ => {false},
+            }
+        };
+
+        Document::for_each(self, function);
+        documents
+    }
+
+    pub fn get_text(&self) -> Option<String> {
+        match self {
+            Document::Text(text) => {
+                return Some(text.clone())
+            },
+            Document::Element(element) => {
+                for node in &element.children {
+                    match node {
+                        Node::Text(text) => {
+                            return Some(text.clone())
+                        },
+                        _ => {}
+                    }
+                }
+            },
+            _ => {}
+        }
+
+        None
+    }
+
+    pub fn attribute(&self, key: &String) -> Option<String> {
+        let mut value: Option<String> = None;
+
+        let function = |document: &Document| {
+            match document {
+                Document::Element(element) => {
+                    value = element.attributes.get(key).unwrap().clone();
+                    if value != None {
+                        return true
+                    }
+                    return false
+                },
+                _ => {false},
+            }
+        };
+
+        Document::for_each(self, function);
+        value
     }
 }
