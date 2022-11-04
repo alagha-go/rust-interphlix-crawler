@@ -2,6 +2,7 @@
 pub enum Document {
     Dom(Dom),
     Element(Element),
+    
     Text(String)
 }
 

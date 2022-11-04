@@ -1,3 +1,4 @@
+#[allow(dead_code)]
 pub fn get_movie_content(html: &String) -> (String, String, String, Vec<String>, Vec<String>, std::time::Duration, Vec<String>, Vec<String>) {
     let document = Document::new(html);
     let description = document
