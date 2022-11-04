@@ -10,3 +10,7 @@ html_parser = "0.6.3"
 reqwest = "0.11.12" #{ version = "0.11.12", features = ["blocking"] }
 tokio = { version = "1.21", features = ["full"] }
 static_init = "1.0.3"
+hex = "0.4.3"
+rand = "0.8.5"
+serde = {version = "1.0", features = ["derive"]}
+serde_json = "1.0.87"
