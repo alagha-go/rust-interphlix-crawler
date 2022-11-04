@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use serde::{Deserialize, Serialize, Serializer, Deserializer};
 use serde::de::{self, Visitor};
 use std::fs::{self, *};

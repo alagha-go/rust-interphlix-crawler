@@ -2,7 +2,6 @@
 pub enum Document {
     Dom(Dom),
     Element(Element),
-    #[allow(dead_code)]
     Text(String)
 }
 

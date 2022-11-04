@@ -1,4 +1,3 @@
-#[allow(dead_code)]
 pub fn get_movies(html: &String) -> Vec<(String, String, String, String)> {
     let document = Document::new(html);
     let documents = document.get_by_class(&"film_list-wrap".to_owned()).expect("could not find document").get_all_by_class(&"flw-item".to_owned());
@@ -19,7 +18,6 @@ pub fn get_movies(html: &String) -> Vec<(String, String, String, String)> {
     movies
 }
 
-#[allow(dead_code)]
 pub async fn get_pages_length(url: String) -> usize {
     let data = get_request(url).await.unwrap();
     let document = Document::new(&data);

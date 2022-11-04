@@ -1,4 +1,3 @@
-#[allow(dead_code)]
 pub fn get_servers(html: &String) -> Vec<(String, String)> {
     let documents = Document::new(html).get_all_by_name(&"a".to_owned());
     let mut servers: Vec<(String, String)> = Vec::new();
@@ -12,7 +11,6 @@ pub fn get_servers(html: &String) -> Vec<(String, String)> {
     servers.into_iter().rev().collect::<Vec<(String, String)>>()
 }
 
-#[allow(dead_code)]
 pub fn get_seasons(html: &String) -> Vec<(String, String)> {
     let documents = Document::new(html).get_all_by_name(&"a".to_owned());
     let mut seasons: Vec<(String, String)> = Vec::new();
@@ -26,7 +24,6 @@ pub fn get_seasons(html: &String) -> Vec<(String, String)> {
     seasons.into_iter().rev().collect::<Vec<(String, String)>>()
 }
 
-#[allow(dead_code)]
 pub fn get_episodes(html: &String) -> Vec<(String, String, String)> {
     let documents = Document::new(html).get_all_by_class(&"swiper-slide".to_owned());
 

@@ -1,4 +1,3 @@
-#[allow(dead_code)]
 impl Document {
     pub fn new(data: &String) -> Self {
         Document::Dom(Dom::parse(&data).unwrap())

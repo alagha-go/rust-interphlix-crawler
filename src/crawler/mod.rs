@@ -1,3 +1,4 @@
+#![allow(dead_code)]
 use html_parser::{Dom, Element, Node};
 
 include!{"structs.rs"}
