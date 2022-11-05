@@ -29,7 +29,7 @@ async fn main() -> Result<(), reqwest::Error> {
     let tv_shows = tokio::spawn(movies::collect_movies(&*TVSHOWSURL, movies::MovieType::Tvshow, Some(1)));
     let movies = tokio::spawn(movies::collect_movies(&*MOVIESURL, movies::MovieType::Movie, Some(1)));
 
-    tokio::join!(tv_shows, movies).unwrap();
+    let _ = tokio::join!(tv_shows, movies);
     
     Ok(())
 }
