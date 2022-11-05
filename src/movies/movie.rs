@@ -87,7 +87,6 @@ impl Movie {
         let json = serde_json::to_string(data).unwrap();
         let bytes = json.as_bytes();
         let path = format!("{}exists.json", &*crate::MOVIESPATH);
-        println!("{}", path);
         let file = File::create(&path).unwrap();
         let mut writer = BufWriter::new(file);
         writer.write_all(bytes).expect("unable to write data");
