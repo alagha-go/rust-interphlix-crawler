@@ -1,10 +1,12 @@
 pub fn get_movie_content(html: &String) -> (String, String, String, Vec<String>, Vec<String>, std::time::Duration, Vec<String>, Vec<String>) {
     let document = Document::new(html);
-    let description = document
+    let description = match document
         .get_by_class(&"description".to_owned())
         .unwrap()
-        .get_text()
-        .unwrap();
+        .get_text() {
+            Some(value) => value,
+            _ => String::from("")
+        };
     let trailer_url = document.get_by_id(Some("iframe-trailer".to_owned())).unwrap().attribute(&"data-src".to_owned()).unwrap();
     let mut released = String::new();
     let mut genres = Vec::new();
@@ -40,7 +42,10 @@ pub fn get_movie_content(html: &String) -> (String, String, String, Vec<String>,
         } else if name == "Duration:".to_owned() {
             let text = element.get_text().unwrap();
             let string = text.split("\n").collect::<Vec<&str>>()[0];
-            let int: u64 = string.parse().unwrap();
+            let int: u64 = match string.parse() {
+                Ok(value) => value,
+                _ => 0
+            };
             duration = std::time::Duration::from_secs(int * 60);
         } else if name == "Country:".to_owned() {
             let values = element.get_all_by_name(&"a".to_owned());
