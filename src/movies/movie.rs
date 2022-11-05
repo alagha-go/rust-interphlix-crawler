@@ -1,7 +1,7 @@
 impl Movie {
     pub async fn crawl(tuple: (String, String, String, String), movie_type: MovieType) -> Self {
         let (name, page_url, code, image_url) = tuple;
-        if Movie::exists(code) {
+        if Movie::exists(&code) {
             return Movie::default()
         }
         let html = crawler::get_request(page_url.clone()).await.unwrap();
