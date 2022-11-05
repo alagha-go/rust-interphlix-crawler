@@ -26,7 +26,10 @@ static mut CODES: Vec<String> = movies::Movie::codes();
 
 #[tokio::main]
 async fn main() -> Result<(), reqwest::Error> {
-    movies::collect_movies(&*TVSHOWSURL, movies::MovieType::Tvshow).await;
+    let tv_shows = tokio::spawn(movies::collect_movies(&*TVSHOWSURL, movies::MovieType::Tvshow, Some(1)));
+    let movies = tokio::spawn(movies::collect_movies(&*MOVIESURL, movies::MovieType::Movie, Some(1)));
+
+    tokio::join!(tv_shows, movies);
     
     Ok(())
 }
