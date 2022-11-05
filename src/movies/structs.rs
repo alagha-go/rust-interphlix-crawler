@@ -14,18 +14,39 @@ pub struct Movie {
     pub duration: std::time::Duration,
     pub casts: Vec<String>,
     pub producers: Vec<String>,
-    pub countries: Vec<String>
+    pub countries: Vec<String>,
+    pub seasons: Vec<Season>,
+    pub servers: Vec<Server>
 }
 
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct Season {
-
+    #[serde(serialize_with = "ObjectId::serialize")]
+    id: ObjectId,
+    name: String,
+    code: String,
+    episodes: Vec<Episode>
 }
 
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub struct Episode {
-
+    #[serde(serialize_with = "ObjectId::serialize")]
+    id: ObjectId,
+    number: i32,
+    name: String,
+    code: String,
+    image_url: String,
+    servers: Vec<Server>
 }
+
+#[derive(Default, Clone, Debug, Serialize, Deserialize)]
+pub struct Server {
+    #[serde(serialize_with = "ObjectId::serialize")]
+    id: ObjectId,
+    name: String,
+    video_id: String
+}
+
 
 #[derive(Default, Clone, Debug, Serialize, Deserialize)]
 pub enum MovieType {
