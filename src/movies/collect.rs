@@ -1,6 +1,6 @@
 pub async fn collect_movies(url: &String, movie_type: MovieType) {
     let mut tuples = Vec::new();
-    let length = 2;//crawler::get_pages_length(url.clone()).await;
+    let length = crawler::get_pages_length(url.clone()).await;
     
     let mut pool = Vec::new();
     
