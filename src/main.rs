@@ -5,14 +5,28 @@ mod movies;
 
 #[dynamic]
 static CLIENT: reqwest::Client = reqwest::Client::new();
+static DOMAIN: &str = "https://sflix.to/";
+static DB: &str = "./DB/";
+#[dynamic]
+static MOVIESPATH: String = format!("{DB}movies/");
+#[dynamic]
+static MOVIESERVERSURL: String = format!("{DOMAIN}ajax/movie/episodes/");
+#[dynamic]
+static SEASONSURL: String = format!("{DOMAIN}ajax/v2/tv/seasons/");
+#[dynamic]
+static EPISODESURL: String = format!("{DOMAIN}ajax/v2/season/episodes/");
+#[dynamic]
+static EPISODESERVERSURL: String = format!("{DOMAIN}ajax/v2/episode/servers/");
+#[dynamic]
+static MOVIESURL: String = format!("{DOMAIN}movie/");
+#[dynamic]
+static TVSHOWSURL: String = format!("{DOMAIN}tv-show/");
+#[dynamic]
+static mut CODES: Vec<String> = movies::Movie::codes();
 
 #[tokio::main]
 async fn main() -> Result<(), reqwest::Error> {
-    let movie = movies::Movie::default();
-    movie.save();
-    let json = serde_json::to_string(&movie).unwrap();
-    let value: movies::Movie = serde_json::from_str(&json).unwrap();
-    println!("{:#?}", value);
+    movies::collect_movies(&*TVSHOWSURL, movies::MovieType::Tvshow).await;
     
     Ok(())
 }
