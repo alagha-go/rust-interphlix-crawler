@@ -4,7 +4,7 @@ pub fn get_movie_content(html: &String) -> (String, String, String, Vec<String>,
         .get_by_class(&"description".to_owned())
         .unwrap()
         .get_text() {
-            Some(value) => value,
+            Some(value) => html_escape::decode_html_entities(&value).to_string(),
             _ => String::from("")
         };
     let trailer_url = document.get_by_id(Some("iframe-trailer".to_owned())).unwrap().attribute(&"data-src".to_owned()).unwrap();
@@ -32,12 +32,12 @@ pub fn get_movie_content(html: &String) -> (String, String, String, Vec<String>,
         } else if name == "Genre:".to_owned() {
             let values = element.get_all_by_name(&"a".to_owned());
             for element in &values {
-                genres.push(element.attribute(&"title".to_owned()).unwrap());
+                genres.push(html_escape::decode_html_entities(&element.attribute(&"title".to_owned()).unwrap()).to_string());
             }
         } else if name == "Casts:".to_owned() {
             let values = element.get_all_by_name(&"a".to_owned());
             for element in &values {
-                casts.push(element.attribute(&"title".to_owned()).unwrap());
+                casts.push(html_escape::decode_html_entities(&element.attribute(&"title".to_owned()).unwrap()).to_string());
             }
         } else if name == "Duration:".to_owned() {
             let text = element.get_text().unwrap();
@@ -50,12 +50,12 @@ pub fn get_movie_content(html: &String) -> (String, String, String, Vec<String>,
         } else if name == "Country:".to_owned() {
             let values = element.get_all_by_name(&"a".to_owned());
             for element in &values {
-                countries.push(element.attribute(&"title".to_owned()).unwrap());
+                countries.push(html_escape::decode_html_entities(&element.attribute(&"title".to_owned()).unwrap()).to_string());
             }
         } else if name == "Production:".to_owned() {
             let values = element.get_all_by_name(&"a".to_owned());
             for element in &values {
-                producers.push(element.attribute(&"title".to_owned()).unwrap());
+                producers.push(html_escape::decode_html_entities(&element.attribute(&"title".to_owned()).unwrap()).to_string());
             }
         }
     }

@@ -10,7 +10,7 @@ pub fn get_movies(html: &String) -> Vec<(String, String, String, String)> {
         let page_url = "https://sflix.to".to_owned() + &film_name.child_attribute(&"href".to_owned()).unwrap();
         let split: Vec<&str> = page_url.split("-").collect();
         let code = split[split.len()-1].to_owned();
-        let name = film_name.child_attribute(&"title".to_owned()).unwrap();
+        let name = html_escape::decode_html_entities(&film_name.child_attribute(&"title".to_owned()).unwrap()).to_string();
         let image_url = poster.child_attribute(&"data-src".to_owned()).unwrap();
         movies.push((name, page_url, code, image_url));
     }
