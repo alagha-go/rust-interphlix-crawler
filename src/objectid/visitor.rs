@@ -11,7 +11,7 @@ impl<'de> Visitor<'de> for ObjectIdVisitor {
     {
         Ok(match ObjectId::from_hex(&s.to_owned()) {
             Ok(value) => value,
-            Err(err) => ObjectId::default()
+            Err(_) => ObjectId::default()
         })
     }
 

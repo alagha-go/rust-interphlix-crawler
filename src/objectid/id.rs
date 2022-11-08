@@ -78,7 +78,7 @@ impl ObjectId {
     pub fn from_hex(string: &String) -> crate::Result<Self> {
         let hex = match hex::decode(string)?.try_into(){
             Ok(value) => value,
-            Err(err) => return Ok(Self::default())
+            Err(_) => return Ok(Self::default())
         };
         Ok(Self::from_bytes(hex))
     }
