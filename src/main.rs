@@ -1,7 +1,9 @@
 use static_init::dynamic;
+use std::error;
 
 mod crawler;
 mod movies;
+mod objectid;
 
 #[dynamic]
 static CLIENT: reqwest::Client = reqwest::Client::new();
@@ -22,17 +24,27 @@ static MOVIESURL: String = format!("{DOMAIN}movie/");
 #[dynamic]
 static TVSHOWSURL: String = format!("{DOMAIN}tv-show/");
 #[dynamic]
-static mut CODES: Vec<String> = movies::Movie::codes();
+static mut CODES: Vec<String> = movies::Movie::codes().unwrap();
+
+type Result<T> = std::result::Result<T, Box<dyn error::Error  + Send + Sync>>;
 
 #[tokio::main]
-async fn main() -> Result<(), reqwest::Error> {
+async fn main() -> Result<()> {
     let time = std::time::SystemTime::now();
-    let tv_shows = tokio::spawn(movies::collect_movies(&*TVSHOWSURL, movies::MovieType::Tvshow, None));
-    let movies = tokio::spawn(movies::collect_movies(&*MOVIESURL, movies::MovieType::Movie, None));
+    let tv_shows = tokio::spawn(movies::collect_movies(
+        &*TVSHOWSURL,
+        movies::MovieType::Tvshow,
+        None,
+    ));
+    let movies = tokio::spawn(movies::collect_movies(
+        &*MOVIESURL,
+        movies::MovieType::Movie,
+        None,
+    ));
 
     let _ = tokio::join!(tv_shows, movies);
 
     println!("{:#?}", time.elapsed().unwrap());
-    
+
     Ok(())
 }

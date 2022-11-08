@@ -1,26 +1,26 @@
 impl Movie {
-    pub async fn crawl(tuple: (String, String, String, String), movie_type: MovieType) -> Self {
+    pub async fn crawl(tuple: (String, String, String, String), movie_type: MovieType) -> Result<Self> {
         let (name, page_url, code, image_url) = tuple;
         if Movie::exists(&code) {
-            return Movie::default()
+            return Ok(Movie::default()?)
         }
-        let html = crawler::get_request(page_url.clone()).await.unwrap();
+        let html = crawler::get_request(page_url.clone()).await?;
         let (description, trailer_url, released, genres, casts, duration, countries, producers) =
-            crawler::get_movie_content(&html);
-        let id = ObjectId::new();
+            crawler::get_movie_content(&html)?;
+        let id = ObjectId::new()?;
 
         let (seasons, servers) = match movie_type {
             MovieType::Movie => {
                 let seasons: Vec<Season> = Vec::new();
                 let url = format!("{}{code}", &*crate::MOVIESERVERSURL);
-                let servers = collect_servers(&url).await;
+                let servers = collect_servers(&url).await?;
 
                 (seasons, servers)
             }
             MovieType::Tvshow => {
                 let servers: Vec<Server> = Vec::new();
                 let url = format!("{}{code}", &*crate::SEASONSURL);
-                let seasons = collect_seasons(&url).await;
+                let seasons = collect_seasons(&url).await?;
 
                 (seasons, servers)
             }
@@ -44,66 +44,68 @@ impl Movie {
             seasons,
             servers,
         };
-        movie.save();
+        movie.save()?;
         crate::CODES.write().push(movie.code.clone());
-        movie
+        Ok(movie)
     }
 
-    pub fn default() -> Self {
-        let id = ObjectId::new();
-        Movie {
+    pub fn default() -> Result<Self> {
+        let id = ObjectId::new()?;
+        Ok(Movie {
             id,
             ..Default::default()
-        }
+        })
     }
 
-    pub fn save(&self) {
-        let json = serde_json::to_string(self).unwrap();
+    pub fn save(&self) -> Result<()> {
+        let json = serde_json::to_string(self)?;
         let bytes = json.as_bytes();
         let path = format!("{}{}.json", &*crate::MOVIESPATH, self.id.hex());
         let file = match File::create(&path) {
             Ok(file) => file,
             Err(err) => match err.kind() {
                 std::io::ErrorKind::NotFound => {
-                    fs::create_dir_all(&*crate::MOVIESPATH).unwrap();
-                    File::create(&path).unwrap()
+                    fs::create_dir_all(&*crate::MOVIESPATH)?;
+                    File::create(&path)?
                 }
-                _ => {
-                    panic!("{}", err);
-                }
+                _ => return Err(err)?
             },
         };
         let mut writer = BufWriter::new(file);
         writer.write_all(bytes).expect("Unable to write data");
+
+        Ok(())
     }
 
     pub fn exists(code: &String) -> bool {
         crate::CODES.read().contains(code)
     }
 
-    pub fn save_codes() {
+    pub fn save_codes() -> Result<()> {
         let data = crate::CODES.read();
         let data = data.deref();
-        let json = serde_json::to_string(data).unwrap();
+        let json = serde_json::to_string(data)?;
         let bytes = json.as_bytes();
         let path = format!("{}exists.json", &*crate::MOVIESPATH);
-        let file = File::create(&path).unwrap();
+        let file = File::create(&path)?;
         let mut writer = BufWriter::new(file);
-        writer.write_all(bytes).expect("unable to write data");
+        writer.write_all(bytes)?;
+
+        Ok(())
     }
 
-    pub fn codes() -> Vec<String> {
+    pub fn codes() -> Result<Vec<String>> {
         let path = format!("{}exists.json", &*crate::MOVIESPATH);
         let file = match File::open(&path) {
             Ok(file) => file,
             Err(err) => match err.kind() {
                 std::io::ErrorKind::NotFound => {
-                    let _ = fs::create_dir_all(&*crate::MOVIESPATH);
-                    let _ = File::create(&path).unwrap();
+                    fs::create_dir_all(&*crate::MOVIESPATH)?;
+                    File::create(&path)?;
                     let codes: Vec<String> = Vec::new();
-                    return codes
+                    return Ok(codes)
                 },
-                _ => panic!("{}", err)
+                _ => return Err(err)?
             }
         };
 
@@ -111,8 +113,8 @@ impl Movie {
         let mut reader = BufReader::new(file);
 
         let _ = reader.read_to_end(&mut buf);
-        let json = String::from_utf8(buf).unwrap();
+        let json = String::from_utf8(buf)?;
         
-        serde_json::from_str(&json).unwrap()
+        Ok(serde_json::from_str(&json)?)
     }
 }

@@ -54,9 +54,3 @@ pub enum MovieType {
     Movie,
     Tvshow
 }
-
-#[derive(Default, Clone, Serialize)]
-pub struct ObjectId {
-    pub id:[u8; 12]
-}
-struct ObjectIdVisitor;

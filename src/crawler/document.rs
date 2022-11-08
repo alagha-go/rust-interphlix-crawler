@@ -1,6 +1,9 @@
 impl Document {
     pub fn new(data: &String) -> Self {
-        Document::Dom(Dom::parse(&data).unwrap())
+        Document::Dom(match Dom::parse(&data) {
+            Ok(value) => value,
+            Err(_) => return Document::Dom(Dom{..Default::default()})
+        })
     }
 
 
@@ -228,8 +231,9 @@ impl Document {
                         None => None,
                         Some(value) => value.clone()
                     };
-                    if value !=  None {
-                        attributes.push(value.unwrap());
+                    match value {
+                        Some(value) => attributes.push(value),
+                        None => {}
                     }
                     return false
                 },
@@ -307,11 +311,14 @@ impl Document {
         let function = |document: &Document| {
             match document {
                 Document::Element(element) => {
-                    value = element.attributes.get(key).unwrap().clone();
-                    if value != None {
-                        return true
+                    value = match element.attributes.get(key) {
+                        Some(value) => value.clone(),
+                        None => None
+                    };
+                    match value {
+                        Some(_) => return true,
+                        None => return false
                     }
-                    return false
                 },
                 _ => {false},
             }
