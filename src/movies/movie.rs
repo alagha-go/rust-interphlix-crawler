@@ -45,7 +45,7 @@ impl Movie {
             servers,
         };
         movie.save()?;
-        crate::CODES.write().push(movie.code.clone());
+        crate::CODES.write().insert(movie.code.clone(), movie.id.id);
         Ok(movie)
     }
 
@@ -78,7 +78,7 @@ impl Movie {
     }
 
     pub fn exists(code: &String) -> bool {
-        crate::CODES.read().contains(code)
+        crate::CODES.read().get(code) != None
     }
 
     pub fn save_codes() -> Result<()> {
@@ -94,7 +94,7 @@ impl Movie {
         Ok(())
     }
 
-    pub fn codes() -> Result<Vec<String>> {
+    pub fn codes() -> Result<HashMap<String, [u8; 12]>> {
         let path = format!("{}exists.json", &*crate::MOVIESPATH);
         let file = match File::open(&path) {
             Ok(file) => file,
@@ -102,7 +102,7 @@ impl Movie {
                 std::io::ErrorKind::NotFound => {
                     fs::create_dir_all(&*crate::MOVIESPATH)?;
                     File::create(&path)?;
-                    let codes: Vec<String> = Vec::new();
+                    let codes: HashMap<String, [u8; 12]> = HashMap::new();
                     return Ok(codes)
                 },
                 _ => return Err(err)?

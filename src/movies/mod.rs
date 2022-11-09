@@ -1,5 +1,6 @@
 #![allow(dead_code)]
 use std::io::{BufWriter, Write, BufReader, Read};
+use std::collections::HashMap;
 use serde::{Deserialize, Serialize};
 use crate::objectid::ObjectId;
 use std::fs::{self, *};

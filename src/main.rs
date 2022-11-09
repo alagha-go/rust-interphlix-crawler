@@ -1,3 +1,4 @@
+use std::collections::HashMap;
 use static_init::dynamic;
 use std::error;
 
@@ -24,7 +25,7 @@ static MOVIESURL: String = format!("{DOMAIN}movie/");
 #[dynamic]
 static TVSHOWSURL: String = format!("{DOMAIN}tv-show/");
 #[dynamic]
-static mut CODES: Vec<String> = movies::Movie::codes().unwrap();
+static mut CODES: HashMap<String, [u8; 12]> = movies::Movie::codes().unwrap();
 
 type Result<T> = std::result::Result<T, Box<dyn error::Error  + Send + Sync>>;
 
