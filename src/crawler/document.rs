@@ -10,21 +10,21 @@ impl Document {
     //loop over all the elements and call the provided function for each
     pub fn for_each<F: FnMut(&Document) -> bool>(&self, mut function: F) {
         // create a stack to create recursion alternative
-        let mut stack = Vec::<Action<(Document, usize)>>::new();
+        let mut stack = Vec::<Action<Document>>::new();
         use Action::*;
-        stack.push(Call((self.clone(), 0)));
+        stack.push(Call(self.clone()));
 
         while let Some(action) = stack.pop() {
             match action {
-                Call((document, level)) => {
+                Call(document) => {
                     match document {
                         Document::Element(element) => {
-                            stack.push(Action::Handle((Document::Element(element.to_owned()), level)));
+                            stack.push(Action::Handle(Document::Element(element.to_owned())));
                             for document in &element.children {
                                 match document {
                                     Node::Element(element) => {
                                         let document = Document::Element(element.to_owned());
-                                        stack.push(Action::Call((document, level+1)));
+                                        stack.push(Action::Call(document));
                                     },
                                     _ => {}
                                 }
@@ -35,7 +35,7 @@ impl Document {
                                 match document {
                                     Node::Element(element) => {
                                         let document = Document::Element(element.to_owned());
-                                        stack.push(Action::Call((document, level+1)));
+                                        stack.push(Action::Call(document));
                                     },
                                     _ => {}
                                 }
@@ -43,11 +43,11 @@ impl Document {
                         },
                         Document::Text(content) => {
                             let document = Document::Text(content);
-                            stack.push(Action::Call((document, level+1)));
+                            stack.push(Action::Call(document));
                         }
                     }
                 },
-                Handle((document, _)) => {
+                Handle(document) => {
                     let out = function(&document);
                     if out {
                         return
